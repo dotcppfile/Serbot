@@ -7,7 +7,7 @@ Serbot is hot, keep reading Lol.
 So, lets just get to the point, I’ve showed you [Awrs](http://dotcppfile.wordpress.com/2014/11/03/awrs-advanced-clientserver-windowslinux-python-reverse-shell/) and what it’s capable of, considered as one of the best Reverse Shells I’ve decided to Update Awrs and create Serbot and no, it’s not what you think Lol.
 
 Serbot is an advanced version of Awrs where the Server can be managed by 1 Controller at a time.
-#####Example:
+######Example:
 Server hosted on 15.48.158.15 and accepts up to 100 clients through port 1567, accepts 1 Controller at a time through port 2357 and the Controller’s functions are protected with a password: “IAmAPassword”
 Client 1 hosted on 86.58.157.25 connected to 15.48.158.15:1567
 Client 2 hosted on 78.459.17.35 connected to 15.48.158.15:1567
