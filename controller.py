@@ -1,5 +1,4 @@
 #!/usr/bin/env python2
-#v2
 
 import subprocess, os, sys, time, threading
 from socket import *
