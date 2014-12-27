@@ -36,6 +36,7 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 1. Yahoo Bruteforcer
 1. AOL Bruteforce
 1. Custome SMTP Bruteforcer
+(if found, the password will be saved in "password.txt" client-side)
 1. You’ll never lose your shell. (No Output, Wrong, Interactive and Infinite commands won’t kill your shell)
 1. Never closes and is always trying to connect to the Server.
 1. Can handle any command properly, such as the cd command.
