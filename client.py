@@ -27,7 +27,7 @@ def gmailbruteforce(email, combination, minimum, maximum):
 	smtpserver.starttls()
 	smtpserver.ehlo()
 
-	bool found = False;
+	found = False
 
 	for n in range(minimum, maximum+1):
 		if (found == False):
@@ -48,7 +48,7 @@ def custombruteforce(address, port, email, combination, minimum, maximum):
 	smtpserver.starttls()
 	smtpserver.ehlo()
 
-	bool found = False;
+	found = False
 
 	for n in range(minimum, maximum+1):
 		if (found == False):
@@ -126,7 +126,7 @@ def main():
 			try:
 				s.connect((host,port))
 				print "[INFO] Connected"
-				break;
+				break
 			except:
 				time.sleep(5)
 		
