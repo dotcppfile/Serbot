@@ -41,7 +41,7 @@ def quitClients():
 		try:
 			item.send("exit")
 			item.close()
-		except Exception as error:
+		except Exception, error:
 			updateLogs(error)
 
 	del allConnections[:]
@@ -159,7 +159,7 @@ def main():
 				for item in allConnections:
 					try:
 						item.send(command)
-					except Exception as error:
+					except Exception, error:
 						updateLogs(error)
 			elif(command == "quit"):
 				quitClients()
@@ -177,9 +177,9 @@ while 1:
 
 			del allConnections[:]
 			del allAddresses[:]
-		except Exception as error:
+		except Exception, error:
 			updateLogs(error)
-	except Exception as error:
+	except Exception, error:
 		updateLogs(error)
 	
 	time.sleep(5)
