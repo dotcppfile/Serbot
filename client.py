@@ -2,7 +2,6 @@
 
 import subprocess, os, sys, time, threading, signal, smtplib
 from socket import *
-from itertools import product
 from threading import Thread
 
 if (len(sys.argv) == 3):
@@ -16,6 +15,22 @@ class Alarm(Exception):
 
 def alarm_handler(signum, frame):
     raise Alarm
+
+def product(*args, **kwds):
+    pools = map(tuple, args) * kwds.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x+[y] for x in result for y in pool]
+    for prod in result:
+        yield tuple(prod)
+
+def repeat(object, times=None):
+    if times is None:
+        while True:
+            yield object
+    else:
+        for i in xrange(times):
+            yield object
 
 def savePass(password):
 	f = open("password.txt", "w")
