@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-import subprocess, os, sys, time, threading, signal, smtplib, urllib2, random, fnmatch
+import subprocess, os, sys, time, threading, signal, smtplib, random, fnmatch
 from socket import *
 from threading import Thread
 
