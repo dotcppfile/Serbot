@@ -1,6 +1,7 @@
 Hello everyone,
 
-![alt tag](https://dotcppfile.files.wordpress.com/2014/11/rsz_1rsz_serbot.png)
+![alt tag](http://i.imgur.com/L7RQlzv.png)
+![alt tag](http://i.imgur.com/YQ81qSZ.png)
 
 Serbot is hot, keep reading Lol.
 
@@ -28,7 +29,8 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 1. Fast and Stable.
 
 #####Client:
-1. Linux/Windows Version.
+1. Linux Version.
+1. Backdooring Function
 1. TCP Flood.
 1. UDP Flood.
 1. Gmail Bruteforcer (Workaround gmail's SMTP login)
@@ -37,7 +39,9 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 1. AOL Bruteforce
 1. Custome SMTP Bruteforcer
 (if found, the password will be saved in "password.txt" client-side)
+1. Self Update
 1. You’ll never lose your shell. (No Output, Wrong, Interactive and Infinite commands won’t kill your shell)
+1. Can handle commands like: mkdir whatever; cd whatever
 1. Never closes and is always trying to connect to the Server.
 1. Can handle any command properly, such as the cd command.
 1. Always gets back a response. (Command Output or Simple Client response)
