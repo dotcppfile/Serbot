@@ -30,18 +30,18 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 
 #####Client:
 1. Linux Version.
-1. Backdooring Function
+1. Backdooring Function. (For more info: https://github.com/dotcppfile/Serbot/releases/tag/18%2F2%2F2015)
 1. TCP Flood.
 1. UDP Flood.
-1. Gmail Bruteforcer (Workaround gmail's SMTP login)
-1. Live Bruteforcer
-1. Yahoo Bruteforcer
-1. AOL Bruteforce
-1. Custome SMTP Bruteforcer
+1. Gmail Bruteforcer. (Workaround gmail's SMTP login)
+1. Live Bruteforcer.
+1. Yahoo Bruteforcer.
+1. AOL Bruteforce.
+1. Custome SMTP Bruteforcer.
 (if found, the password will be saved in "password.txt" client-side)
-1. Self Update
+1. Self Update.
 1. You’ll never lose your shell. (No Output, Wrong, Interactive and Infinite commands won’t kill your shell)
-1. Can handle commands like: mkdir whatever; cd whatever
+1. Can handle commands like: mkdir whatever; cd whatever.
 1. Never closes and is always trying to connect to the Server.
 1. Can handle any command properly, such as the cd command.
 1. Always gets back a response. (Command Output or Simple Client response)
