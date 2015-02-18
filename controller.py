@@ -32,6 +32,7 @@ stop                    | Stop interacting with client
 udpflood <ip>:<port>    | UDP flood threw client
 tcpflood <ip>:<port>    | TCP flood threw client
 serbackdoor <web dir>   | Infects all PHP Pages with Malicious Code that will run the Serbot Client (if killed) again
+rmbackdoor <web dir>    | Removes the Malicious PHP Code
 
 Wide Commands:
 --------------
