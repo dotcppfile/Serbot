@@ -24,7 +24,7 @@ In Serbot, everything was dealt with, your Server will never crash nor will your
 1. Bridge. Plays also the roll of a Bridge between the Clients and the Controller.
 1. The Controller’s connection requires a plain text password, it’s not the best but it’s more than enough when it comes to keeping “l337 hax0rz b0t tak30v3r” away.
 1. Accepts only 1 Controller at a time.
-1. Kicks the Controller after 10 mins. This was added just in case someone forgot his Controller on which won’t allow other controllers to connect (since the Server only accepts 1 controller at a time).
+1. Kicks the Controller after 5 mins. This was added just in case someone forgot his Controller on which won’t allow other controllers to connect (since the Server only accepts 1 controller at a time).
 1. Uses a very small amount of CPU and RAM when running.
 1. Fast and Stable.
 
