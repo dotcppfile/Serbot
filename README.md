@@ -61,7 +61,7 @@ This list isn’t enough but that’s all that I can think of right now. If you 
 You simply have to remove the “#!/usr/bin/env python2″ at the top of every script to get this up and running on windows.
 
 #####Extra:
-If you’re trying to activate the Client threw ssl, shell or web shell then you have to run the Client.py in another process in the background or else your shell will dive into an endless loop and the best way to do that in Linux would be using nohup.
+If you’re trying to activate the Client through ssl, shell or web shell then you have to run the client.py in another process in the background or else your shell will dive into an endless loop and the best way to do that in Linux would be using nohup.
 
 ######Example:
 nohup python client.py 15.48.158.15 1567 > /dev/null &
